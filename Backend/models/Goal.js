@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const goalSchema = new mongoose.Schema({
-    
     name: {
         type: String,
         required: [true, "Please enter your name"],
@@ -12,7 +11,7 @@ const goalSchema = new mongoose.Schema({
     },
 
     savedAmount: {
-        type: String,
+        type: Number,
     },
 
 });

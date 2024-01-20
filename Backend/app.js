@@ -16,12 +16,14 @@ app.use(cookieParser());
 // const monthLimit = require("./routes/monthLimit");
 const user = require("./routes/user");
 const expenditure = require("./routes/expenditure");
+const goal = require("./routes/goals");
 
 
 
 //using routes
 app.use("/user", user);
 app.use("/expens", expenditure);
+app.use("/goal", goal);
 // app.use("/expens", monthLimit);
 
 
