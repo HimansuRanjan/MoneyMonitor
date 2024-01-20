@@ -5,3 +5,4 @@ npm init -y
 
 
 npm i express body-parser mongoose dotenv
+npm install cookie-parser
