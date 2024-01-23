@@ -1,42 +1,25 @@
 const Expenditure = require('../models/Expenditure');
 const MonthLimit = require('../models/MonthLimit');
 
-exports.setexpenditure = async (req, res) =>{
+exports.expend = async (req, res) =>{
     try {
-        const {monthlyLimit, saved, month, year} = req.body;
+        const {type, amount} = req.body;
         
-        
-
-        //create a month limit object 
-        const mon = month ? month : new Date().getMonth();
-        const yer = year ? year : new Date().getFullYear();
-
-        let monthcheck = await MonthLimit.findOne({mon});
-        if(monthcheck && await MonthLimit.findOne(monthcheck.year)){
-            return res.status(404).json({
-                success: false,
-                message: "Monthly Limit Already Set for this Month",
-              });
-        }
-        
-        const monthLimObj = await MonthLimit.create({
-            amount: monthlyLimit,
-            month: mon,
-            year: yer
+        const expense = await Expenditure.create({
+            type,
+            amount,
+            datetime: Date.now()
         });
 
-        console.log(monthLimObj);
-        //add to Expenditure and then save
-
-        const expenditure = await Expenditure.create({
-            monthlyLimit: monthLimObj._id,
-            saved
-        });
+        //add expense to the month list
+        const currentMonth = req.currentMonth;
+        currentMonth.expenditure.push(expense._id);
+        currentMonth.save();
 
         res.status(200).json({
             success: true,
-            message: "Monthly Limit Added!!!",
-            expenditure
+            message: "Expense done!!!",
+            expense
           });
     } catch (error) {
         res.status(500).json({
@@ -46,35 +29,55 @@ exports.setexpenditure = async (req, res) =>{
     }
 }
 
-exports.updateexpenditure = async (req, res) =>{
+exports.deleteExpenditure = async (req, res) =>{
     try {
-        const {monthlyLimit, saved} = req.body;
+        const objectToDelete = await Expenditure.findById({_id: req.params.id});
 
-        const expense = await Expenditure.findById(req.params.id);
-        if(!expense){
+        // Delete from Month Expenditure List
+        const requiredMonth = req.currentMonth;
+        const indexToRemove = requiredMonth.expenditure.indexOf(req.params.id);
+        if (indexToRemove !== -1) {
+            requiredMonth.expenditure.splice(indexToRemove, 1);
+          }
+        await requiredMonth.save();
+
+        //delete from expenditure collection
+        const deleted = await Expenditure.findByIdAndDelete(req.params.id);
+        if(!deleted){
             return res.status(404).json({
                 success: false,
-                message: "Data to set Expenditure Not Found!",
+                message: "Spend Not Found!",
               });
         }
-        const upadeteMonthLimit = await MonthLimit.findByIdAndUpdate(expense.monthlyLimit, {amount: monthlyLimit}, { new: true });
-
-        if(!upadeteMonthLimit){
-            return res.status(404).json({
-                success: false,
-                message: "Data to set Expenditure Not Found!",
-              });
-        }
-
-        expense.saved = saved;
-        await expense.save();
 
         res.status(200).json({
             success: true,
-            message: "Monthly Limit Updated!!!",
-            expense
+            message: "Expense Deleted!",
           });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+          });
+    }
+}
 
+exports.getExpenditure = async (req, res) =>{
+    try {
+        const expensList = req.currentMonth.expenditure;
+        const expenditures = await Expenditure.find({_id: {$in : expensList}});
+
+        let totalExpense = 0;
+        expenditures.map((expense)=>{
+            totalExpense += expense.amount;
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "All Expense of the Month!",
+            expenditures,
+            totalExpense
+          }); 
     } catch (error) {
         res.status(500).json({
             success: false,

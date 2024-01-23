@@ -3,14 +3,11 @@ const User = require('../models/User');
 
 exports.setGoal = async (req, res) =>{
     try {
-        const { name, goalAmount, savedAmount } = req.body;
-
-        if(savedAmount == null) savedAmount = 0;
+        const { name, goalAmount } = req.body;
 
         const goal = await Goal.create({
             name,
-            goalAmount,
-            savedAmount
+            goalAmount
         });
 
         const user = req.user;
@@ -33,8 +30,8 @@ exports.setGoal = async (req, res) =>{
 
 exports.updateGoal = async (req, res) =>{
     try {
-        const { name, goalAmount, savedAmount } = req.body;
-        const update = await Goal.findByIdAndUpdate(req.params.id, {name, goalAmount, savedAmount} , {new : true});
+        const { name, goalAmount } = req.body;
+        const update = await Goal.findByIdAndUpdate(req.params.id, {name, goalAmount} , {new : true});
         if(!update){
             return res.status(404).json({
                 success: false,
@@ -62,6 +59,14 @@ exports.deleteGoal = async (req, res) =>{
 
         if (indexToRemove !== -1) {
             user.goals.splice(indexToRemove, 1);
+            // const deleted = Goal.deleteOne({_id: req.params.id});
+            // if(!deleted){
+            //     user.goals.push(req.params.id);
+            //     return res.status(404).json({
+            //         success: false,
+            //         message: "Goal Not Found!",
+            //     });
+            // }
         }else{
             return res.status(404).json({
                 success: false,
@@ -69,7 +74,7 @@ exports.deleteGoal = async (req, res) =>{
               });
         }
 
-        const deleted = await Goal.findByIdAnddelete(req.params.id);
+        const deleted = await Goal.findByIdAndDelete(req.params.id);
         if(!deleted){
             return res.status(404).json({
                 success: false,
@@ -93,8 +98,15 @@ exports.deleteGoal = async (req, res) =>{
 
 exports.getGoals = async (req, res) =>{
     try {
-        const goals = req.user.goals;
-         
+        const goal_ids = req.user.goals;
+        const goals = await Goal.find({ _id: { $in: goal_ids } });
+
+        return res.status(201).json({
+            success: true,
+            message: "All Goals are: ",
+            goals
+        }); 
+        
     } catch (error) {
        res.status(500).json({
         success: false,

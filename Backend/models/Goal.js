@@ -8,12 +8,7 @@ const goalSchema = new mongoose.Schema({
 
     goalAmount: {
         type: Number
-    },
-
-    savedAmount: {
-        type: Number,
-    },
-
+    }
 });
 
 module.exports = mongoose.model("Goal", goalSchema);

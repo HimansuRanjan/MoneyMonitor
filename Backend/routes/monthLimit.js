@@ -6,15 +6,16 @@ const {
     getmonthLimitByYear,
 } = require("../controllers/monthLimit");
 
-const { isAuthnticated } = require("../middlewares/auth");
+const { isAuthenticated } = require("../middlewares/auth");
 
 const router = express.Router();
 
-// router.route("/setMonthlyLimit").post(isAuthnticated, setMonthLimit);
+router.route("/setMonthlyLimit").post(isAuthenticated, setMonthLimit);
 
-// router.route("/updateMonthLimit").post(isAuthnticated, updateMonthLimit);
+router.route("/updateMonthLimit/:id").put(isAuthenticated, updateMonthLimit);
 
-// router.route('/getmonthLimitByYear').get(isAuthnticated, getmonthLimitByYear);
-// router.route('/getmonthLimitByMonth').get(isAuthnticated, getmonthLimitByMonth);
+router.route('/getmonthLimitByYear').get(isAuthenticated, getmonthLimitByYear);
+
+router.route('/getmonthLimitByMonth').get(isAuthenticated, getmonthLimitByMonth);
 
 module.exports = router;

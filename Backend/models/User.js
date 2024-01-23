@@ -26,19 +26,27 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
 
-    goals: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Goal",
-        },
-      ],
-    expenditure:[
-      {
+    // usage: [
+    //     {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Usage",
+    //     }
+    //   ]
+    monthlyLimit:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Expenditure",
+        ref: "MonthLimit"
       }
-    ]
+    ],
 
+    saved: {
+      type: Number
+    },
+
+    goals: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Goal"
+      }
+    ],
 });
 
 module.exports = mongoose.model("User", userSchema);

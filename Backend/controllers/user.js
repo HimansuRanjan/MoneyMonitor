@@ -45,9 +45,9 @@ exports.register = async (req, res) =>{
 exports.login = async (req, res)=>{
     try{
         const { email, password } = req.body;
-        const user = await User.findOne({ email }).select("+password");
+        const user = await User.findOne({ email });
 
-        if(!user || user.password!=password){
+        if(!user || user.password!==password){
             return res.status(404).json({
                 success: false,
                 message: "Invalid Credintials! Try Again",

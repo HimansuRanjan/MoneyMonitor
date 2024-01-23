@@ -1,21 +1,20 @@
 const mongoose = require("mongoose");
 
-const expensSchema = new mongoose.Schema({
-    monthlyLimit:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "MonthLimit",
-        },
+const expenseSchema = new mongoose.Schema({
+    type: {
+        type: String
+      },
     
-    saved: {
-        type: Number
-    },
+    amount: {
+        type: Number,
+        required: [true, "Please enter an amount"],
+      },
 
-    dailyExpense: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "DailyExpnditure",
-        },
-      ]
+    datetime: {
+        type: Date,
+        default: Date.now,
+      }
+      
 });
 
-module.exports = mongoose.model("Expenditure", expensSchema);
+module.exports = mongoose.model("Expnditure", expenseSchema);
